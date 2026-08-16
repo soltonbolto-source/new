@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Studio | Next.js + Django</title>
+    <style>
+      :root {
+        --bg: #07111f;
+        --bg-soft: #101d30;
+        --panel: rgba(17, 25, 39, 0.95);
+        --panel-2: rgba(22, 34, 52, 0.9);
+        --primary: #7cc5ff;
+        --primary-2: #8b5cf6;
+        --accent: #6ee7b7;
+        --text: #edf6ff;
+        --muted: #a9bfd9;
+        --line: rgba(255, 255, 255, 0.08);
+        --success: #4ade80;
+        --warning: #fbbf24;
+        --danger: #fb7185;
+      }
+
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+
+      body {
+        margin: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        background: linear-gradient(180deg, var(--bg) 0%, #0f172a 100%);
+        color: var(--text);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .container {
+        width: min(1200px, calc(100% - 32px));
+        margin: 0 auto;
+      }
+
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(7, 17, 31, 0.8);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--line);
+      }
+
+      nav {
+        min-height: 76px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+      }
+
+      .brand {
+        font-size: 1.25rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .brand span { color: var(--accent); }
+
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .nav-links a:hover { color: var(--text); }
+
+      .cta {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        color: white;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 700;
+        box-shadow: 0 8px 22px rgba(124, 197, 255, 0.25);
+      }
+
+      .button.secondary {
+        background: transparent;
+        border: 1px solid var(--line);
+        box-shadow: none;
+      }
+
+      main { padding: 32px 0 64px; }
+
+      .hero {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 28px;
+        align-items: center;
+        padding: 42px 0 22px;
+      }
+
+      .eyebrow {
+        display: inline-block;
+        padding: 8px 14px;
+        border: 1px solid rgba(124, 197, 255, 0.35);
+        border-radius: 999px;
+        color: var(--primary);
+        background: rgba(124, 197, 255, 0.08);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 18px 0 16px;
+        font-size: clamp(2.5rem, 5vw, 4.3rem);
+        line-height: 1.05;
+      }
+
+      h2 {
+        margin: 0 0 10px;
+        font-size: clamp(1.8rem, 3vw, 2.8rem);
+      }
+
+      .lead {
+        color: var(--muted);
+        font-size: 1.08rem;
+        line-height: 1.8;
+        max-width: 700px;
+      }
+
+      .hero-actions {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        margin-top: 28px;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(120px, 1fr));
+        gap: 18px;
+        margin-top: 30px;
+      }
+
+      .stat {
+        background: rgba(255,255,255,0.02);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px 16px;
+      }
+
+      .stat strong {
+        display: block;
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+      }
+
+      .stat span { color: var(--muted); font-size: 0.9rem; }
+
+      .hero-panel {
+        background: linear-gradient(180deg, var(--panel-2), rgba(10, 15, 28, 0.95));
+        border: 1px solid var(--line);
+        border-radius: 28px;
+        padding: 22px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.24);
+      }
+
+      .mini-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px 16px;
+        margin-bottom: 14px;
+      }
+
+      .mini-card:last-child { margin-bottom: 0; }
+
+      .mini-card .label {
+        display: block;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.72rem;
+        margin-bottom: 10px;
+      }
+
+      .mini-card .value {
+        font-size: 1.7rem;
+        font-weight: 700;
+      }
+
+      .progress {
+        margin-top: 12px;
+        height: 12px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--line);
+        overflow: hidden;
+      }
+
+      .progress > span {
+        display: block;
+        width: 82%;
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent), var(--primary));
+        border-radius: inherit;
+      }
+
+      section { margin-top: 42px; }
+
+      .section-header { margin-bottom: 18px; }
+
+      .section-header p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 22px;
+      }
+
+      .card {
+        background: rgba(17, 25, 39, 0.95);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 22px 20px;
+      }
+
+      .card h3 { margin: 0 0 12px; font-size: 1.2rem; }
+
+      .card p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .chip {
+        display: inline-block;
+        margin-bottom: 12px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid rgba(110, 231, 183, 0.35);
+        color: var(--accent);
+        background: rgba(110, 231, 183, 0.07);
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .feature-list {
+        list-style: none;
+        margin: 18px 0 0;
+        padding: 0;
+        display: grid;
+        gap: 10px;
+      }
+
+      .feature-list li {
+        position: relative;
+        padding-left: 18px;
+        color: var(--muted);
+      }
+
+      .feature-list li::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+      }
+
+      .two-col {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 24px;
+      }
+
+      .table-wrap {
+        background: rgba(17, 25, 39, 0.95);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th, td {
+        padding: 16px 18px;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+      }
+
+      th {
+        background: rgba(255,255,255,0.02);
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.72rem;
+      }
+
+      td { color: var(--text); }
+
+      .status {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.76rem;
+        font-weight: 700;
+      }
+
+      .green { background: rgba(74, 222, 128, 0.12); color: var(--success); }
+      .amber { background: rgba(251, 191, 36, 0.12); color: var(--warning); }
+
+      .timeline {
+        display: grid;
+        gap: 14px;
+      }
+
+      .timeline-item {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        background: rgba(17, 25, 39, 0.95);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px 16px;
+      }
+
+      .num {
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary), var(--primary-2));
+        color: white;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .timeline-item h4 {
+        margin: 0 0 6px;
+        font-size: 1.05rem;
+      }
+
+      .timeline-item p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .contact-box {
+        background: linear-gradient(135deg, rgba(124, 197, 255, 0.08), rgba(139, 92, 246, 0.1));
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 24px 22px;
+      }
+
+      footer {
+        padding: 24px 0 40px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      @media (max-width: 900px) {
+        .hero, .two-col, .grid { grid-template-columns: 1fr; }
+        .nav-links { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <nav>
+          <div class="brand"><span>AI</span> Studio</div>
+          <div class="nav-links">
+            <a href="#main">Главная</a>
+            <a href="#services">Услуги</a>
+            <a href="#stack">Технологии</a>
+            <a href="#process">Процесс</a>
+            <a href="#contact">Контакты</a>
+          </div>
+          <a class="cta" href="#contact">Связаться</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main">
+      <div class="container">
+        <section class="hero">
+          <div>
+            <span class="eyebrow">Next.js + Django + PostgreSQL</span>
+            <h1>Сайт под ваш бизнес, который работает быстро и растет вместе с вами.</h1>
+            <p class="lead">
+              Мы создаем современные веб-платформы на стеке Next.js, Python Django и PostgreSQL:
+              быстрый frontend, мощный backend, надежная база данных и удобный запуск на Vercel и Render.
+            </p>
+            <div class="hero-actions">
+              <a class="cta" href="#services">Посмотреть услуги</a>
+              <a class="cta button secondary" href="#stack">Технологии</a>
+            </div>
+
+            <div class="stats">
+              <div class="stat">
+                <strong>3</strong>
+                <span>Основные слоя</span>
+              </div>
+              <div class="stat">
+                <strong>99.9%</strong>
+                <span>Цель доступности</span>
+              </div>
+              <div class="stat">
+                <strong>24/7</strong>
+                <span>Поддержка и рост</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-panel">
+            <div class="mini-card">
+              <span class="label">Frontend</span>
+              <div class="value">Next.js</div>
+            </div>
+            <div class="mini-card">
+              <span class="label">Backend</span>
+              <div class="value">Django API</div>
+            </div>
+            <div class="mini-card">
+              <span class="label">База данных</span>
+              <div class="value">PostgreSQL</div>
+              <div class="progress"><span></span></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="services">
+          <div class="section-header">
+            <h2>Что входит в проект</h2>
+            <p>Готовый стек для бизнеса, портфолио, SaaS-платформы и личного бренда.</p>
+          </div>
+
+          <div class="grid">
+            <article class="card">
+              <span class="chip">Landing</span>
+              <h3>Главная страница</h3>
+              <p>
+                Продающая посадочная страница с понятным UX, сильным заголовком,
+                блоками услуг, кейсами и кнопками для заявок.
+              </p>
+              <ul class="feature-list">
+                <li>SEO-структура</li>
+                <li>Адаптивный дизайн</li>
+                <li>Удобный call-to-action</li>
+              </ul>
+            </article>
+
+            <article class="card">
+              <span class="chip">Platform</span>
+              <h3>Панель управления</h3>
+              <p>
+                Админ-панель для управления контентом, пользователями, заказами,
+                статьями и настройками без лишней сложности.
+              </p>
+              <ul class="feature-list">
+                <li>Админка Django</li>
+                <li>Управление данными</li>
+                <li>Безопасный доступ</li>
+              </ul>
+            </article>
+
+            <article class="card">
+              <span class="chip">API</span>
+              <h3>REST API</h3>
+              <p>
+                Надежный backend для связи frontend и DB, работа с формами, данными,
+                пользовательскими запросами и логикой приложения.
+              </p>
+              <ul class="feature-list">
+                <li>Модели и сериализаторы</li>
+                <li>Проверка данных</li>
+                <li>Расширяемость</li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="stack" class="two-col">
+          <div>
+            <div class="section-header">
+              <h2>Технологический стек</h2>
+              <p>Надежная архитектура для скорости, безопасности и масштабирования.</p>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Компонент</th>
+                    <th>Роль</th>
+                    <th>Статус</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Next.js</td>
+                    <td>Frontend / интерфейс</td>
+                    <td><span class="status green">Готов</span></td>
+                  </tr>
+                  <tr>
+                    <td>Django</td>
+                    <td>Backend / API / логика</td>
+                    <td><span class="status green">Готов</span></td>
+                  </tr>
+                  <tr>
+                    <td>PostgreSQL</td>
+                    <td>База данных</td>
+                    <td><span class="status green">Готов</span></td>
+                  </tr>
+                  <tr>
+                    <td>Vercel</td>
+                    <td>Развертывание frontend</td>
+                    <td><span class="status green">Готов</span></td>
+                  </tr>
+                  <tr>
+                    <td>Render</td>
+                    <td>Развертывание backend</td>
+                    <td><span class="status amber">Подключение</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div>
+            <div class="section-header">
+              <h2>Как это работает</h2>
+              <p>Пользователь → интерфейс → API → база данных → админка.</p>
+            </div>
+            <div class="card">
+              <ul class="feature-list">
+                <li>Пользователь открывает страницу на Next.js.</li>
+                <li>Frontend отправляет запросы в Django API.</li>
+                <li>Django валидирует данные и работает с бизнес-логикой.</li>
+                <li>PostgreSQL хранит информацию безопасно и стабильно.</li>
+                <li>Админка позволяет управлять контентом и настройками.</li>
+                <li>Vercel и Render обеспечивают быстрый запуск проекта.</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section id="process">
+          <div class="section-header">
+            <h2>Этапы запуска проекта</h2>
+            <p>От идеи до рабочего сайта — просто и структурно.</p>
+          </div>
+
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="num">1</div>
+              <div>
+                <h4>Аналитика и план</h4>
+                <p>Определяем цели, аудиторию, функционал и структуру сайта.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="num">2</div>
+              <div>
+                <h4>Дизайн и UX</h4>
+                <p>Создаем современный интерфейс в корпоративном стиле и под ваш бизнес.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="num">3</div>
+              <div>
+                <h4>Разработка</h4>
+                <p>Frontend на Next.js, backend на Django, связь с PostgreSQL и API.</p>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="num">4</div>
+              <div>
+                <h4>Тестирование и деплой</h4>
+                <p>Проверяем корректность, оптимизируем, запускаем на Vercel и Render.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="contact">
+          <div class="section-header">
+            <h2>Что еще нужно для полного запуска</h2>
+            <p>Это базовый набор, который обычно требуется для живого сайта.</p>
+          </div>
+
+          <div class="grid">
+            <article class="card">
+              <span class="chip">Нужно</span>
+              <h3>Основные элементы</h3>
+              <ul class="feature-list">
+                <li>Доменное имя</li>
+                <li>GitHub репозиторий</li>
+                <li>Переменные окружения</li>
+                <li>База данных PostgreSQL</li>
+              </ul>
+            </article>
+
+            <article class="card">
+              <span class="chip">Полезно</span>
+              <h3>Для роста бизнеса</h3>
+              <ul class="feature-list">
+                <li>Email-уведомления</li>
+                <li>Форма обратной связи</li>
+                <li>SEO-настройки</li>
+                <li>Google Analytics</li>
+              </ul>
+            </article>
+
+            <article class="contact-box">
+              <span class="chip">CTA</span>
+              <h3>Готовы запустить?</h3>
+              <p>Можно сделать MVP, бизнес-сайт, портал или личный проект на этом стеке.</p>
+              <div style="margin-top: 16px;">
+                <a class="cta" href="mailto:hello@ai-studio.example">hello@ai-studio.example</a>
+              </div>
+            </article>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">AI Studio • Next.js + Django + PostgreSQL • Vercel + Render</div>
+    </footer>
+  </body>
+</html>
