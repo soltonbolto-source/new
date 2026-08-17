@@ -1,19 +1,19 @@
 import './globals.css';
 
 export const metadata = {
-  metadataBase: new URL('https://ai-studio.example.com'),
+  metadataBase: new URL('https://ravza.example.com'),
   title: {
-    default: 'AI Studio | Разработка сайтов и цифровых продуктов',
-    template: '%s | AI Studio',
+    default: 'Равза медресеси | Ислам илимдери жана Куран жаттоо',
+    template: '%s | Равза медресеси',
   },
-  description: 'AI Studio создает современные сайты, маркетплейсы, CRM, лендинги и AI-интеграции для бизнеса.',
-  keywords: ['сайты', 'разработка сайтов', 'Django', 'Next.js', 'AI интеграции', 'CRM', 'лендинг', 'корпоративный сайт'],
+  description: 'Равза медресеси — 2000-жылдан бери ислам илимдерин үйрөтүп келе жаткан медресе. Куран жаттоо, хадис, фикх, акыйда жана араб тили.',
+  keywords: ['Равза медресеси', 'ислам илимдери', 'Куран жаттоо', 'хадис', 'фикх', 'акыйда', 'араб тили', 'Кыргызстан'],
   openGraph: {
-    title: 'AI Studio | Разработка сайтов и цифровых продуктов',
-    description: 'Сайты, CRM, API, AI-интеграции и digital-платформы для бизнеса.',
-    url: 'https://ai-studio.example.com',
-    siteName: 'AI Studio',
-    locale: 'ru_RU',
+    title: 'Равза медресеси | Ислам илимдери жана Куран жаттоо',
+    description: 'Равза медресеси — 2000-жылдан бери ислам илимдерин үйрөтүп келе жаткан медресе.',
+    url: 'https://ravza.example.com',
+    siteName: 'Равза медресеси',
+    locale: 'ky_KG',
     type: 'website',
   },
   alternates: {
@@ -23,20 +23,8 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ru">
+    <html lang="ky">
       <body>
-        <header className="site-header">
-          <div className="container nav-bar">
-            <a href="/" className="brand"><span>AI</span> Studio</a>
-            <nav className="nav-links">
-              <a href="/">Главная</a>
-              <a href="/about">О нас</a>
-              <a href="/services">Услуги</a>
-              <a href="/contact">Контакты</a>
-            </nav>
-            <a href="/contact" className="primary-btn small-btn">Связаться</a>
-          </div>
-        </header>
         {children}
       </body>
     </html>
